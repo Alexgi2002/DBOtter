@@ -1,0 +1,69 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Go
+core-engine/core-engine
+core-engine/*.exe
+core-engine/*.test
+*.prof
+
+# Swift / Xcode
+macos-app/.build/
+macos-app/build/
+macos-app/*.xcworkspace
+macos-app/*.xcodeproj/xcuserdata/
+macos-app/*.xcodeproj/project.xcworkspace/
+macos-app/DBOtter.xcodeproj/project.xcworkspace/
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+*.xccheckout
+
+# Swift Package Manager
+macos-app/.swiftpm/
+macos-app/Package.resolved
+
+# Build artifacts
+*.app
+*.dSYM
+*.ipa
+*.pkg
+*.xcarchive
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+*.lcov
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Opencode / AI
+.opencode/
+.atl/
+.qodo/

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "sqlite_logo_icon_169724.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
