@@ -1,3 +1,13 @@
+//
+//  ErrorView.swift
+//  DBOtter
+//
+//  Created by AlexGI on 13/06/2026.
+//
+
+import SwiftUI
+
+
 struct ErrorView: View {
     let message: String
     let retry: () -> Void
@@ -11,6 +21,7 @@ struct ErrorView: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
                 .padding(.horizontal)
+                .textSelection(.enabled)
             Button("Reintentar", action: retry)
                 .buttonStyle(.borderedProminent)
         }

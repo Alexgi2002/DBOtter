@@ -1,4 +1,16 @@
-private var disconnectedView: some View {
+//
+//  DisconnectedView.swift
+//  DBOtter
+//
+//  Created by AlexGI on 17/06/2026.
+//
+
+import SwiftUI
+
+struct DisconnectedView: View {
+    @Binding var viewModel: TableDataViewModel
+    
+    var body: some View{
         VStack(spacing: 16) {
             Image(systemName: "wifi.slash")
                 .font(.system(size: 48))
@@ -21,3 +33,4 @@ private var disconnectedView: some View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(40)
     }
+}

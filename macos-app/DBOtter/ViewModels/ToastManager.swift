@@ -1,9 +1,18 @@
+//
+//  ToastManager.swift
+//  DBOtter
+//
+//  Created by AlexGI on 14/06/2026.
+//
+
+
 import SwiftUI
+import Foundation
+import Combine
 
 @MainActor
 @Observable
 class ToastManager {
-    // Instancia compartida por comodidad o inyección
     static let shared = ToastManager()
     
     var isShowing: Bool = false
@@ -14,12 +23,10 @@ class ToastManager {
         self.message = message
         self.icon = icon
         
-        // Evitamos solapamientos si ya hay uno en pantalla
         withAnimation(.spring()) {
             self.isShowing = true
         }
         
-        // Auto-hide automático cooperativo
         Task {
             try? await Task.sleep(nanoseconds: 2_500_000_000)
             withAnimation(.spring()) {

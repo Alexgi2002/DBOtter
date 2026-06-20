@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-struct Usuario: Identifiable, ObservableObject {
-    let id = UUID()
-    @Published var nombre: String
-    @Published var correo: String
-    @Published var rol: String
-}
-
 enum TableViewMode: String, CaseIterable {
     case structure = "Estructura"
     case data      = "Datos"
@@ -158,13 +151,17 @@ struct TableDataView: View {
         if viewModel.isLoading {
             ProgressView("Cargando datos...").frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if viewModel.isDisconnected {
-            disconnectedView
+            DisconnectedView(viewModel: $viewModel)
         } else if let result = viewModel.queryResult {
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 if viewModel.hasPendingEdits || viewModel.saveError != nil {
                     pendingEditsBar
                 }
-                dataTable(result)
+                
+                DynamicTableView(
+                    data: convertQueryResultToDisplayRows(result),
+                    columns: result.columns
+                )
             }
         } else if let error = viewModel.errorMessage {
             ErrorView(message: error) { Task { await viewModel.loadData() } }
@@ -208,59 +205,20 @@ struct TableDataView: View {
 
     // MARK: - Disconnected Panel
 
-    private var disconnectedView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "wifi.slash")
-                .font(.system(size: 48))
-                .foregroundStyle(.secondary)
-            Text("Base de datos desconectada")
-                .font(.title3).fontWeight(.semibold)
-            if let msg = viewModel.errorMessage {
-                Text(msg)
-                    .font(.caption).foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center).frame(maxWidth: 360)
-            }
-            Text("Reconecta desde la barra lateral expandiendo la conexión para recargar esta tabla automáticamente.")
-                .font(.caption).foregroundStyle(.secondary)
-                .multilineTextAlignment(.center).frame(maxWidth: 360)
-            Button(action: { Task { await viewModel.loadData() } }) {
-                Label("Reintentar", systemImage: "arrow.clockwise")
-            }
-            .buttonStyle(.borderedProminent)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(40)
-    }
+    
 
     // MARK: - Data Table
 
-    @State private var usuarios: [Usuario] = []
+    // MARK: - Data Table
 
-    private func dataTable(_ result: QueryResult) -> some View {
-        // Convert JSON data to Usuario structs
-        usuarios = result.rows.enumerated().map { (_, row) in
-            // Convert the first three columns to Usuario properties
-            let nombre = row.count > 0 ? (row[0]?.displayString ?? "") : ""
-            let correo = row.count > 1 ? (row[1]?.displayString ?? "") : ""
-            let rol = row.count > 2 ? (row[2]?.displayString ?? "") : ""
-            return Usuario(nombre: nombre, correo: correo, rol: rol)
-        }
-        
-        return Table(usuarios) {
-            TableColumn("Nombre") { $usuario in
-                TextField("Nombre", text: $usuario.nombre)
-                    .textFieldStyle(.plain) // Elimina el borde gris feo por defecto
-                    .padding(6)
-                    .background(Color.blue.opacity(0.05)) // Fondo sutil personalizado
-                    .cornerRadius(4)
+    // MARK: - Convert QueryResult to displayable rows
+
+    private func convertQueryResultToDisplayRows(_ result: QueryResult) -> [[String]] {
+        return result.rows.map { row in
+            row.map { value in
+                value.displayString
             }
-            
-            TableColumn("Correo Electrónico", value: \.correo)
-            TableColumn("Rol asignado", value: \.rol)
         }
-        .tableStyle(.bordered)
-        .alternatingRowBackgrounds(.disabled)
-        .listRowSeparator(.hidden)
     }
 }
 

@@ -1,16 +1,24 @@
+//
+//  GlobalToastModifier.swift
+//  DBOtter
+//
+//  Created by AlexGI on 14/06/2026.
+//
+
+import SwiftUI
+
 struct GlobalToastModifier: ViewModifier {
     @Environment(ToastManager.self) private var toastManager
     
     func body(content: Content) -> some View {
         ZStack {
-            content // Aquí se renderiza toda tu app normal (TabView, Login, etc.)
+            content
             
-            // Capa superior: El Toast Flotante Global
             if toastManager.isShowing {
                 VStack {
                     HStack(spacing: 12) {
                         Image(systemName: toastManager.icon)
-                            .foregroundColor(.hotPink)
+                            .foregroundColor(.blue)
                         Text(toastManager.message)
                             .bold()
                             .foregroundColor(.white)
@@ -31,7 +39,6 @@ struct GlobalToastModifier: ViewModifier {
     }
 }
 
-// Extensión para llamarlo de forma limpia (.withGlobalToast())
 extension View {
     func withGlobalToast() -> some View {
         self.modifier(GlobalToastModifier())
