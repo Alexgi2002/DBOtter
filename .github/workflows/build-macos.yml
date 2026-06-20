@@ -35,10 +35,10 @@ jobs:
           ls -lh core-engine
           file core-engine
 
-      - name: Verify Go binary
-        run: |
-          ./core-engine/core-engine --version || true
-          ./core-engine/core-engine -help || true
+      # - name: Verify Go binary
+      #   run: |
+      #     ./core-engine/core-engine --version || true
+      #     ./core-engine/core-engine -help || true
 
       - name: Set up Xcode
         uses: maxim-lobanov/setup-xcode@v1
