@@ -86,15 +86,15 @@ jobs:
             find "$APP_PATH" -name "core-engine" -type f
           fi
 
-      - name: Create DMG (optional)
+      - name: Create ZIP for distribution
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           cd macos-app
           APP_PATH=$(find build -name "DBOtter.app" -type d | head -1)
           VERSION=${GITHUB_REF_NAME#v}
-          DMG_NAME="DBOtter-${VERSION}-macOS-arm64.dmg"
-          hdiutil create -volname "DBOtter" -srcfolder "$APP_PATH" -ov -format UDZO "$DMG_NAME"
-          echo "DMG_PATH=$PWD/$DMG_NAME" >> $GITHUB_ENV
+          ZIP_NAME="DBOtter-${VERSION}-macOS-arm64.zip"
+          ditto -c -k --keepParent "$APP_PATH" "$ZIP_NAME"
+          echo "ZIP_PATH=$PWD/$ZIP_NAME" >> $GITHUB_ENV
 
       - name: Upload macOS App artifact
         uses: actions/upload-artifact@v4
@@ -103,12 +103,12 @@ jobs:
           path: ${{ env.APP_PATH }}
           retention-days: 30
 
-      - name: Upload DMG artifact
+      - name: Upload ZIP artifact
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
-          name: DBOtter-DMG
-          path: ${{ env.DMG_PATH }}
+          name: DBOtter-ZIP
+          path: ${{ env.ZIP_PATH }}
           retention-days: 30
 
   release:
@@ -128,8 +128,28 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/DBOtter-macOS-arm64/DBOtter.app/**
-            artifacts/DBOtter-DMG/*.dmg
+            artifacts/DBOtter-ZIP/*.zip
           generate_release_notes: true
           draft: false
           prerelease: false
+          body: |
+            ## DBOtter ${{ github.ref_name }}
+            
+            ### 📥 Instalación en macOS
+            1. Descarga **`DBOtter-${{ github.ref_name }}.zip`** desde los assets abajo
+            2. Doble click para descomprimir → obtienes `DBOtter.app`
+            3. Arrastra `DBOtter.app` a tu carpeta `Applications`
+            4. **Primera ejecución** (solo la primera vez):
+               - **Opción A (GUI):** Click derecho en `DBOtter.app` → **Abrir** → Click **Abrir**
+               - **Opción B (Terminal):** `xattr -cr /Applications/DBOtter.app`
+            5. ¡Listo! La app ya abre normal en futuras ejecuciones
+            
+            ---
+            **Nota:** La app no está firmada con certificado Developer ID ($99/año), por eso macOS pide confirmación la primera vez. Es seguro: el código es abierto y se compila en GitHub Actions.
+            
+            ### 🛠 Qué incluye
+            - Interfaz nativa SwiftUI (macOS 14+)
+            - Motor Go embebido para PostgreSQL, MySQL, SQLite
+            - Túnel SSH integrado (password / clave privada / clave inline)
+            - Exportación CSV, Excel, JSON, SQL
+            - Autocompletado SQL con Runestone
